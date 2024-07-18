@@ -30,13 +30,11 @@ public class GithubController {
 
     @ExceptionHandler(GithubException.class)
     public ResponseEntity<ErrorResponse> handleGithubException(GithubException ex) {
-        return switch (ex.getFailReason()) {
-            case USER_NOT_FOUND ->
-                    new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()), HttpStatus.NOT_FOUND);
-            case RATE_LIMIT_EXCEEDED ->
-                    new ResponseEntity<>(new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage()), HttpStatus.FORBIDDEN);
-            default ->
-                    new ResponseEntity<>(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
+        HttpStatus status = switch (ex.getFailReason()) {
+            case USER_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case RATE_LIMIT_EXCEEDED -> HttpStatus.FORBIDDEN;
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
+        return new ResponseEntity<>(new ErrorResponse(status.value(), ex.getMessage()), status);
     }
 }
