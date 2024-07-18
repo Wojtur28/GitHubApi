@@ -11,8 +11,8 @@ public class GithubException extends RuntimeException {
 
     public enum FailReason {
         USER_NOT_FOUND,
-        TRAINING_NOT_FOUND,
-        RATE_LIMIT_EXCEEDED
+        RATE_LIMIT_EXCEEDED,
+        UNEXPECTED_ERROR
     }
 
     GithubException.FailReason failReason;

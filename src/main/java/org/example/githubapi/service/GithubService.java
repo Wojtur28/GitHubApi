@@ -29,10 +29,6 @@ public class GithubService {
         try {
             ResponseEntity<GithubRepository[]> response = restTemplate.getForEntity(url, GithubRepository[].class);
 
-            if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new GithubException(GithubException.FailReason.USER_NOT_FOUND, "User not found");
-            }
-
             GithubRepository[] repositories = response.getBody();
 
             if (repositories == null || repositories.length == 0) {
@@ -64,10 +60,12 @@ public class GithubService {
 
             return repositoryList;
         } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.FORBIDDEN && e.getResponseBodyAsString().contains("API rate limit exceeded")) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new GithubException(GithubException.FailReason.USER_NOT_FOUND, "User not found");
+            } else if (e.getStatusCode() == HttpStatus.FORBIDDEN && e.getResponseBodyAsString().contains("API rate limit exceeded")) {
                 throw new GithubException(GithubException.FailReason.RATE_LIMIT_EXCEEDED, "API rate limit exceeded. Please authenticate to get a higher rate limit.");
             } else {
-                throw e;
+                throw new GithubException(GithubException.FailReason.UNEXPECTED_ERROR, "An unexpected error occurred");
             }
         }
     }
