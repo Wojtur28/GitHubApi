@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: GitHubApi
+
+github:
+  api-url: https://api.github.com
