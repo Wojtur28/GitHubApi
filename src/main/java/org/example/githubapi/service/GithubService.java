@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -67,6 +68,8 @@ public class GithubService {
             } else {
                 throw new GithubException(GithubException.FailReason.UNEXPECTED_ERROR, "An unexpected error occurred");
             }
+        } catch (HttpServerErrorException e) {
+            throw new GithubException(GithubException.FailReason.UNEXPECTED_ERROR, "An unexpected error occurred");
         }
     }
 
