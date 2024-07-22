@@ -33,7 +33,7 @@ public class GithubService {
             GithubRepository[] repositories = response.getBody();
 
             if (repositories == null || repositories.length == 0) {
-                throw new GithubException(GithubException.FailReason.USER_NOT_FOUND, "User not found");
+                throw new GithubException(GithubException.FailReason.REPOSITORY_NOT_FOUND, "Repositories not found");
             }
 
             List<GithubRepository> repositoryList = new ArrayList<>();
