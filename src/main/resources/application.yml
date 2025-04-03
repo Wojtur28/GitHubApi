@@ -1,6 +1,9 @@
 spring:
   application:
     name: GitHubApi
+  threads:
+    virtual:
+      enabled: true
 
 github:
   api-url: https://api.github.com

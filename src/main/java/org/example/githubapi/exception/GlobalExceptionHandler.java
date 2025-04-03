@@ -13,8 +13,10 @@ public class GlobalExceptionHandler {
         HttpStatus status = switch (ex.getFailReason()) {
             case USER_NOT_FOUND -> HttpStatus.NOT_FOUND;
             case RATE_LIMIT_EXCEEDED -> HttpStatus.FORBIDDEN;
+            case TOO_MANY_REQUESTS -> HttpStatus.TOO_MANY_REQUESTS;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
+
         ErrorResponse errorResponse = new ErrorResponse(status.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, status);
     }

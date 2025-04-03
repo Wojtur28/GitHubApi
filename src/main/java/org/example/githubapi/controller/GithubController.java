@@ -1,6 +1,6 @@
 package org.example.githubapi.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.example.githubapi.model.GithubRepository;
 import org.example.githubapi.service.GithubService;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/repositories")
 public class GithubController {

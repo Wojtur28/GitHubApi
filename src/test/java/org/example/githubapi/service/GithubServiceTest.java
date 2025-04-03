@@ -1,5 +1,6 @@
 package org.example.githubapi.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.example.githubapi.exception.GithubException;
@@ -11,7 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
+
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -26,6 +28,9 @@ public class GithubServiceTest {
     private GithubService githubService;
 
     private static WireMockServer wireMockServer;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     @BeforeAll
     static void setUpAll() {
@@ -42,7 +47,11 @@ public class GithubServiceTest {
     void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         wireMockServer.resetAll();
-        githubService = new GithubService(new RestTemplate());
+        RestClient restClient = RestClient.builder()
+                .baseUrl(wireMockServer.baseUrl())
+                .build();
+
+        githubService = new GithubService(objectMapper, restClient);
 
         Field githubApiUrlField = GithubService.class.getDeclaredField("githubApiUrl");
         githubApiUrlField.setAccessible(true);
@@ -84,9 +93,7 @@ public class GithubServiceTest {
         wireMockServer.stubFor(get(urlEqualTo("/users/" + username + "/repos"))
                 .willReturn(aResponse().withStatus(404)));
 
-        GithubException exception = assertThrows(GithubException.class, () -> {
-            githubService.getRepositories(username);
-        });
+        GithubException exception = assertThrows(GithubException.class, () -> githubService.getRepositories(username));
 
         assertEquals(GithubException.FailReason.USER_NOT_FOUND, exception.getFailReason());
         assertEquals("User not found", exception.getMessage());
@@ -99,12 +106,10 @@ public class GithubServiceTest {
         wireMockServer.stubFor(get(urlEqualTo("/users/" + username + "/repos"))
                 .willReturn(aResponse().withStatus(403).withBody("{\"message\":\"API rate limit exceeded\"}")));
 
-        GithubException exception = assertThrows(GithubException.class, () -> {
-            githubService.getRepositories(username);
-        });
+        GithubException exception = assertThrows(GithubException.class, () -> githubService.getRepositories(username));
 
         assertEquals(GithubException.FailReason.RATE_LIMIT_EXCEEDED, exception.getFailReason());
-        assertEquals("API rate limit exceeded. Please authenticate to get a higher rate limit.", exception.getMessage());
+        assertEquals("API rate limit exceeded. Please authenticate.", exception.getMessage());
     }
 
     @Test
@@ -114,12 +119,10 @@ public class GithubServiceTest {
         wireMockServer.stubFor(get(urlEqualTo("/users/" + username + "/repos"))
                 .willReturn(aResponse().withStatus(500)));
 
-        GithubException exception = assertThrows(GithubException.class, () -> {
-            githubService.getRepositories(username);
-        });
+        GithubException exception = assertThrows(GithubException.class, () -> githubService.getRepositories(username));
 
         assertEquals(GithubException.FailReason.UNEXPECTED_ERROR, exception.getFailReason());
-        assertEquals("An unexpected error occurred", exception.getMessage());
+        assertEquals("Unexpected error", exception.getMessage());
     }
 
 
