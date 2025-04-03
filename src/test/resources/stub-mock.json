@@ -1,0 +1,125 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/users/testUser/repos"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "name": "repo1",
+            "owner": { "login": "testUser" },
+            "fork": false
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/repos/testUser/repo1/branches"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          { "name": "main", "commit": { "sha": "abcd1234" } },
+          { "name": "feature", "commit": { "sha": "efgh5678" } }
+        ]
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/users/nonexistent/repos"
+      },
+      "response": {
+        "status": 404,
+        "jsonBody": { "message": "User not found" }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/users/empty/repos"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": []
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/users/ratelimit/repos"
+      },
+      "response": {
+        "status": 403,
+        "jsonBody": { "message": "API rate limit exceeded" }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/users/unexpected/repos"
+      },
+      "response": {
+        "status": 500,
+        "jsonBody": { "message": "Unexpected error" }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/users/throttle/repos"
+      },
+      "response": {
+        "status": 429,
+        "jsonBody": { "message": "Too many requests" }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/users/nobranches/repos"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "name": "repo1",
+            "owner": { "login": "nobranches" },
+            "fork": false
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/repos/nobranches/repo1/branches"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": []
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/users/forkonly/repos"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "name": "repoFork",
+            "owner": { "login": "forkonly" },
+            "fork": true
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,11 +1,8 @@
 package org.example.githubapi.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-@AllArgsConstructor
+import lombok.Getter;
+
 @Getter
 public class GithubException extends RuntimeException {
 
@@ -13,11 +10,14 @@ public class GithubException extends RuntimeException {
         USER_NOT_FOUND,
         RATE_LIMIT_EXCEEDED,
         UNEXPECTED_ERROR,
-        REPOSITORY_NOT_FOUND
+        REPOSITORY_NOT_FOUND,
+        TOO_MANY_REQUESTS,
     }
 
-    GithubException.FailReason failReason;
+    private final FailReason failReason;
 
-    private String message;
+    public GithubException(FailReason failReason, String message) {
+        super(message);
+        this.failReason = failReason;
+    }
 }
-
