@@ -1,12 +1,18 @@
 # GitHub Repository Viewer
 
-Simple application to return a list of a user's repositories with branches using the GitHub API, excluding forks.
+Simple Spring Boot application to return a list of a user's repositories with branches using the GitHub API, excluding forks.
 
 ## Features
 
 - List all non-fork GitHub repositories for a specified user.
 - Retrieve branch names and last commit SHAs for each branch.
-- Handle different error scenarios including user not found, API rate limit exceeded, and unexpected errors.
+- Handle various error scenarios:
+  - User not found (`404`)
+  - API rate limit exceeded (`403`)
+  - Too many requests (`429`)
+  - Unexpected errors (`500`)
+- Uses `RestClient` for calling external APIs.
+- Integration tests with `Testcontainers` and `WireMock`.
 
 ## Warning
 
@@ -28,7 +34,7 @@ Frequent API requests or requests for users with many repositories and extensive
     cd GitHubApi
     ```
 
-2. Build the project using Maven:
+2. Build the project:
 
     ```sh
     mvn clean install
@@ -51,70 +57,20 @@ Frequent API requests or requests for users with many repositories and extensive
 - Headers:
     - `Accept: application/json`
 
-**Response:**
+**Responses:**
 
-- Status: `200 OK`
-- Body:
+- `200 OK`
   ```json
   [
     {
-      "repositoryName": "repo1",
-      "ownerLogin": {
-        "login": "testuser"
-      },
+      "name": "repo1",
+      "ownerLogin": "testuser",
       "fork": false,
       "branches": [
         {
           "name": "main",
-          "commit": {
-            "sha": "abc123"
-          }
+          "lastCommitSha": "abc123"
         }
       ]
     }
   ]
-
-- Status: `404 Not Found`
-- Body:
-  ```json
-  [
-    {
-  "status": 404,
-  "message": "User not found"
-    }
-  ]
-
-- Status: `403 Forbidden`
-- Body:
-  ```json
-  [
-    {
-  "status": 403,
-  "message": "API rate limit exceeded. Please authenticate to get a higher rate limit."
-    }
-  ]
-
-- Status: `500 Internal Server Error`
-- Body:
-  ```json
-  [
-    {
-  "status": 500,
-  "message": "An unexpected error occurred"
-    }
-  ]
-
-## Using Swagger
-
-You can use Swagger to send requests and explore the API.
-After starting the application, navigate to the following URL to access the Swagger UI: \
-http://localhost:8080/swagger-ui/index.html
-
-
-## Running Tests
-
-To run the tests, execute the following command:
-
-```sh
-mvn test
-```
